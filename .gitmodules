@@ -3,4 +3,4 @@
 	url = https://github.com/Vilbrekin/platform_external_openssl.git
 [submodule "tinc"]
 	path = tinc
-	url = https://github.com/jed1/tinc.git
+	url = https://github.com/thorkill/tinc.git
