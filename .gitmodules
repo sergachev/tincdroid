@@ -3,6 +3,6 @@
 	url = https://github.com/android/platform_external_openssl.git
 [submodule "tinc"]
 	path = tinc
-	url = http://tinc-vpn.org/git/tinc
+	url = git://tinc-vpn.org/tinc
 	branch = 1.1
 
