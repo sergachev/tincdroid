@@ -1,6 +1,8 @@
 [submodule "platform_external_openssl"]
 	path = platform_external_openssl
-	url = https://github.com/Vilbrekin/platform_external_openssl.git
+	url = https://github.com/android/platform_external_openssl.git
 [submodule "tinc"]
 	path = tinc
-	url = https://github.com/thorkill/tinc.git
+	url = http://tinc-vpn.org/git/tinc
+	branch = 1.1
+
