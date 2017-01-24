@@ -411,7 +411,7 @@
 #define PACKAGE_NAME "tinc"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "tinc 1.1pre11"
+#define PACKAGE_STRING "tinc 1.1pre14"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "tinc"
@@ -457,7 +457,7 @@
 
 
 /* Version number of package */
-#define VERSION "1.1pre11"
+#define VERSION "1.1pre14"
 
 /* Compile with support for Windows 2000 */
 /* #undef WITH_WINDOWS2000 */

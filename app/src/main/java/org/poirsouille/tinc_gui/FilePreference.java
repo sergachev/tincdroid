@@ -1,6 +1,6 @@
 /*
  *    Copyright (C) 2012 Vilbrekin <vilbrekin@gmail.com>
- *    
+ *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
@@ -38,19 +38,19 @@ public class FilePreference extends DialogPreference
     private String _filePath;
     ArrayList<String> _fileList = new ArrayList<String>();
     TextView _currPathTxtView = null;
-    
+
     public FilePreference(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-        
+
         setDialogLayoutResource(R.layout.file_preference);
-        
+
         setPositiveButtonText(android.R.string.ok);
         setNegativeButtonText(android.R.string.cancel);
 
         setDialogIcon(null);
     }
-    
+
     @Override
     public void onBindDialogView(View view)
     {
@@ -61,7 +61,7 @@ public class FilePreference extends DialogPreference
         updateFilesList("");
         final ArrayAdapter<String> fileList = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, _fileList);
         aList.setAdapter(fileList);
-        
+
         // Setup onclick handler
         aList.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -72,8 +72,10 @@ public class FilePreference extends DialogPreference
                 fileList.notifyDataSetChanged();
             }
         });
+
+        super.onBindDialogView(view);
     }
-    
+
    /**
     * Update current file path by adding iNext to it (might be ".." to go back up one level).
     * @param iNext
@@ -97,7 +99,7 @@ public class FilePreference extends DialogPreference
             _currPathTxtView.setText(_filePath);
         }
     }
-    
+
    /**
     * Update current file path by adding iNext to it (might be ".." to go back up one level).
     * @param iNext
@@ -115,7 +117,7 @@ public class FilePreference extends DialogPreference
         // List child folders or conf file
         if (aChildren != null)
         {
-            for (File aChild : aChildren) 
+            for (File aChild : aChildren)
             {
                 if (aChild.isDirectory())
                 {
@@ -127,14 +129,14 @@ public class FilePreference extends DialogPreference
                 }
             }
         }
-        
+
         Collections.sort(_fileList);
     }
 
     @Override
-    protected void onDialogClosed(boolean positiveResult) 
+    protected void onDialogClosed(boolean positiveResult)
     {
-        if (positiveResult) 
+        if (positiveResult)
         {
             // When the user selects "OK", persist the new value
             persistString(_filePath);
@@ -145,7 +147,7 @@ public class FilePreference extends DialogPreference
             _filePath = getPersistedString(DEFAULT_VALUE);
         }
     }
-    
+
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue)
     {
@@ -153,7 +155,7 @@ public class FilePreference extends DialogPreference
         {
             // Restore existing state
             _filePath = this.getPersistedString(DEFAULT_VALUE);
-        } 
+        }
         else
         {
             // Set default state from the XML attribute
@@ -161,11 +163,11 @@ public class FilePreference extends DialogPreference
             persistString(_filePath);
         }
     }
-    
+
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index)
     {
         return a.getString(index);
     }
-    
+
 }

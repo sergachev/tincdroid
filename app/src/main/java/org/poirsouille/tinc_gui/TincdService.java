@@ -1,6 +1,6 @@
 /*
  *    Copyright (C) 2012 Vilbrekin <vilbrekin@gmail.com>
- *    
+ *
  *    This program is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation, either version 3 of the License, or
@@ -68,39 +68,39 @@ public class TincdService extends Service implements ICallback
     private OnSharedPreferenceChangeListener _prefChangeListener;
     private final ConnectivityroadcastReceiver _broadcastReceiver = new ConnectivityroadcastReceiver();
     private boolean _reconnectOnNetChange = false;
-    
+
     public ICallback _callback = null;
 
-    
+
     // Binder given to clients
     private final IBinder _binder = new LocalBinder();
-    
+
     /**
      * Class used for the client Binder.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with IPC.
      */
-    public class LocalBinder extends Binder 
+    public class LocalBinder extends Binder
     {
-        TincdService getService() 
+        TincdService getService()
         {
             // Return this instance of LocalService so clients can call public methods
             return TincdService.this;
         }
     }
-    
+
    /**
-    * Network state events receiver. 
+    * Network state events receiver.
     */
     public class ConnectivityroadcastReceiver extends BroadcastReceiver
     {
         /// Ensure we don't try to un-register several times
         private boolean _receiverRegistered = false;
-        
+
        /**
-        * Listen for network change events, and force tincd reconnection as soon as connectivity is back. 
+        * Listen for network change events, and force tincd reconnection as soon as connectivity is back.
         */
         @Override
-        public void onReceive(Context context, Intent intent) 
+        public void onReceive(Context context, Intent intent)
         {
            String aAction = intent.getAction();
            if(aAction.equals(ConnectivityManager.CONNECTIVITY_ACTION))
@@ -116,7 +116,7 @@ public class TincdService extends Service implements ICallback
                }
            }
         }
-        
+
         /**
          * Register a broadcast receiver to get notified on network state change.
          */
@@ -131,7 +131,7 @@ public class TincdService extends Service implements ICallback
                  _receiverRegistered = true;
              }
          }
-         
+
         /**
          * Unregister broadcast receiver.
          */
@@ -146,23 +146,23 @@ public class TincdService extends Service implements ICallback
      };
 
    /**
-    * Execute given command, with either su or sh as shell. 
+    * Execute given command, with either su or sh as shell.
     * @param command
     * @param ioCallBack
     * @return
     */
-    public List<String> run(String command, ICallback ioCallBack) 
+    public List<String> run(String command, ICallback ioCallBack)
     {
         String aShell = "su";
         if (! _useSU)
             aShell = "sh";
         return Tools.Run(aShell, new String[] {command}, ioCallBack);
     }
-    
+
     private static String getArch()
     {
         String prop = System.getProperty("os.arch");
-        
+
         if (prop.contains("x86") || prop.contains("i686") || prop.contains("i386"))
         {
             return "x86";
@@ -176,18 +176,18 @@ public class TincdService extends Service implements ICallback
             return "armeabi";
         }
     }
-    
-    public void startTinc() 
+
+    public void startTinc()
     {
         if (! _started)
         {
             // Start tincd in a dedicated thread
-            new Thread(new Runnable() 
+            new Thread(new Runnable()
             {
                 public void run()
                 {
                     installTincd();
-                    
+
                     int aPid;
                     if ((aPid = getPid()) != 0)
                     {
@@ -196,7 +196,7 @@ public class TincdService extends Service implements ICallback
                         try
                         {
                             Thread.sleep(500);
-                        } 
+                        }
                         catch (InterruptedException e)
                         {
                         }
@@ -217,9 +217,9 @@ public class TincdService extends Service implements ICallback
                 }
             }).start();
         }
-        
+
     }
-    
+
     public void stopTincd()
     {
         if (_started)
@@ -238,8 +238,8 @@ public class TincdService extends Service implements ICallback
         // Ensure GUI is updated
         call("tincd terminated.");
     }
- 
-   /**    * Install tincd binary on file system if needed (either it does not exist yet, or it's different from the bundled one). 
+
+   /**    * Install tincd binary on file system if needed (either it does not exist yet, or it's different from the bundled one).
     */
     void installTincd()
     {
@@ -249,8 +249,8 @@ public class TincdService extends Service implements ICallback
             AssetManager aAssetMgr = this.getAssets();
             InputStream aIS = aAssetMgr.open(getArch() + "/tincd");
             int aInLen = aIS.available();
-            byte[] buffer = new byte[aInLen];  
-            //read the text file as a stream, into the buffer  
+            byte[] buffer = new byte[aInLen];
+            //read the text file as a stream, into the buffer
             aIS.read(buffer);
             aIS.close();
             File aTincBinFile = getFileStreamPath(TINCBIN);
@@ -272,7 +272,7 @@ public class TincdService extends Service implements ICallback
                         aInstallNeeded = false;
                     }
                 }
-                
+
             }
             if (aInstallNeeded)
             {
@@ -280,32 +280,32 @@ public class TincdService extends Service implements ICallback
                 FileOutputStream aOS = openFileOutput(TINCBIN, MODE_PRIVATE);
                 // Copy file from raw resources
                 aOS.write(buffer);
-                //Close the Input and Output streams  
-                aOS.close();  
-                
+                //Close the Input and Output streams
+                aOS.close();
+
             }
-            
+
             // Ensure binary is executable
             if (! aTincBinFile.canExecute())
             {
                 // Set it as executable
                 aTincBinFile.setExecutable(true, false);
             }
-        } 
+        }
         catch (IOException e)
         {
             e.printStackTrace();
-        }  
+        }
     }
-    
+
    /**
-    * Get PID from PIDFILE, if exists 
+    * Get PID from PIDFILE, if exists
     * @return
     */
     public int getPid()
     {
         int aPid = 0;
-        try 
+        try
         {
             String aStr;
             InputStream aInstream = openFileInput(PIDFILE);
@@ -314,26 +314,26 @@ public class TincdService extends Service implements ICallback
             {
                 aPid = Integer.parseInt(aStr);
             }
-        } 
-        catch (FileNotFoundException e) 
+        }
+        catch (FileNotFoundException e)
         {
             // Not found is expected, do nothing
-        } 
-        catch (IOException e) 
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
         Log.d(Tools.TAG, "Returning PID " + aPid);
         return aPid;
     }
-    
+
     public boolean isStarted()
     {
         return _started;
     }
-    
+
    /**
-    * Send given signal to the daemon. 
+    * Send given signal to the daemon.
     * @param iSigType
     * @return
     */
@@ -347,21 +347,21 @@ public class TincdService extends Service implements ICallback
         }
         return aRes;
     }
-    
+
    /**
-    * Toggle debug level 5 on/off by sending SIGINT to the daemon. 
+    * Toggle debug level 5 on/off by sending SIGINT to the daemon.
     */
     public void toggleDebug()
     {
         signal("SIGINT");
         _debug = !_debug;
     }
-    
+
    /**
-    * Handle intent on startService call. Defines START & STOP actions to allow external applications to drive service. 
+    * Handle intent on startService call. Defines START & STOP actions to allow external applications to drive service.
     */
     @Override
-    public int onStartCommand(Intent iIntent, int flags, int startId) 
+    public int onStartCommand(Intent iIntent, int flags, int startId)
     {
         // Because of the START_STICKY, the service might get restarted by the system after a kill, but with a null intent
         if (iIntent != null)
@@ -377,7 +377,7 @@ public class TincdService extends Service implements ICallback
             {
                 Log.i(Tools.TAG, "Received STOP intent for tincd service");
                 stopTincd();
-            }        
+            }
             else
             {
                 Log.e(Tools.TAG, "Unkown intent action: " + iIntent.getAction());
@@ -393,7 +393,7 @@ public class TincdService extends Service implements ICallback
     public void onCreate()
     {
         _sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        // Refresh local preferences when there are some updates - keep listener in a class member to avoid GC 
+        // Refresh local preferences when there are some updates - keep listener in a class member to avoid GC
         // (see http://stackoverflow.com/questions/2542938/sharedpreferences-onsharedpreferencechangelistener-not-being-called-consistently)
         _prefChangeListener = new OnSharedPreferenceChangeListener()
         {
@@ -405,13 +405,13 @@ public class TincdService extends Service implements ICallback
         _sharedPref.registerOnSharedPreferenceChangeListener(_prefChangeListener);
         // Refresh at startup as well
         refreshPrefs("");
-        
+
         // Re-register if needed
         _broadcastReceiver.register();
     }
-    
+
    /**
-    * Refresh member variables from preferences screen. 
+    * Refresh member variables from preferences screen.
     */
     private void refreshPrefs(String iKey)
     {
@@ -421,7 +421,7 @@ public class TincdService extends Service implements ICallback
         _debugLvl = Integer.parseInt(_sharedPref.getString("pref_key_debug_level", "" + _debugLvl));
         _useSU = _sharedPref.getBoolean("pref_key_super_user", _useSU);
         _reconnectOnNetChange = _sharedPref.getBoolean("pref_key_force_reconnect", _reconnectOnNetChange);
-        
+
         if (iKey.equals("pref_key_autostart_boot"))
         {
             // Enable/disable boot time notification
@@ -433,29 +433,29 @@ public class TincdService extends Service implements ICallback
             Log.d(Tools.TAG, "Changing boot status notification state: " + aAutoStart);
         }
     }
-    
+
     public void onDestroy ()
     {
         stopTincd();
         _broadcastReceiver.unregister();
         Log.d(Tools.TAG, "Service destroyed");
     }
-    
+
     @Override
-    public IBinder onBind(Intent intent) 
+    public IBinder onBind(Intent intent)
     {
         return _binder;
     }
-    
-    
+
+
    /**
     * Show a notification while this service is running.
     */
     @SuppressWarnings("deprecation")
-    private void showNotification() 
+    private void showNotification()
     {
-        
-        Notification notification = new Notification(R.drawable.favicon, getText(R.string.local_service_started),
+
+        Notification notification = new Notification(R.raw.favicon, getText(R.string.local_service_started),
                 System.currentTimeMillis());
         Intent notificationIntent = new Intent(this, TincActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -465,7 +465,7 @@ public class TincdService extends Service implements ICallback
     }
 
    /**
-    * Pop temporary output: fetch it and clear internal list. 
+    * Pop temporary output: fetch it and clear internal list.
     * @return
     */
     public List<String> popOutput()
@@ -483,7 +483,7 @@ public class TincdService extends Service implements ICallback
 
    /**
     * Callback implementation. Used when new line is printed by the service.
-    * Either forwards it to activity's callback (if available, on the foreground), or stores the result in temporary output. 
+    * Either forwards it to activity's callback (if available, on the foreground), or stores the result in temporary output.
     */
     public void call(String iData)
     {
@@ -506,9 +506,9 @@ public class TincdService extends Service implements ICallback
             }
         }
     }
-    
+
    /**
-    * Get tincd status and routing table. 
+    * Get tincd status and routing table.
     * @return
     */
     public String getStatus()
@@ -519,7 +519,7 @@ public class TincdService extends Service implements ICallback
         aStatus += Tools.ToString(run(getFileStreamPath(TINCBIN) + " --version", null));
         return aStatus;
     }
-    
+
    /**
     * Check if there's anything left in context or tincd is running.
     * Otherwise stop the service.
@@ -531,5 +531,5 @@ public class TincdService extends Service implements ICallback
             stopSelf();
         }
     }
-    
+
 }
